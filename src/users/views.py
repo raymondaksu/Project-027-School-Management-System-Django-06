@@ -1,6 +1,8 @@
 from rest_framework import serializers, viewsets
 from django.contrib.auth import get_user_model
 
+from submissions.models import StudentSubmission
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
@@ -16,6 +18,15 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+class AssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentSubmission
+        fields = ('id', 'project_id', 'url', 'feedback', 'approved')
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
+
+class AssignmentViewSet(viewsets.ModelViewSet):
+    queryset = StudentSubmission.objects.all()
+    serializer_class = AssignmentSerializer
