@@ -1,2 +1,2 @@
-# Project-027-School-Management-System-Django-06
+# Project-027-Student-Management-System-Django-06
 Tutorial
