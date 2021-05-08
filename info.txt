@@ -1,0 +1,4 @@
+run "psql -U postgres" for open postgresql shell
+After create database;
+-create user sms_admin;
+-GRANT ALL PRIVILEGES ON DATABASE studentmanagemensystem TO sms_admin;

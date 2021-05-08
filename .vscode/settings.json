@@ -1,0 +1,5 @@
+{
+    "python.pythonPath": "${workspaceRoot}/senv/Scripts/python",
+    "python.linting.pylintEnabled": false,
+    "python.linting.enabled": true,
+}
