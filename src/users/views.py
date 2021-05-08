@@ -8,6 +8,8 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True, 'min_length': 8}}
 
     def create(self, validated_data):
+        # is_student is a custom field in the User model so this field
+        # needs tobe saved AFTER the user saved
         is_student = validated_data.pop('is_student')
         user = get_user_model().objects.create_user(**validated_data)
         user.is_student = is_student
