@@ -1,8 +1,15 @@
-from rest_framework import serializers, viewsets
 from django.contrib.auth import get_user_model
+from rest_framework import serializers, viewsets
+from rest_framework.decorators import permission_classes
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 
 from submissions.models import StudentSubmission
 from projects.models import Project
+from .permissions import ObjectPermission
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,18 +26,41 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+
 class AssignmentSerializer(serializers.ModelSerializer):
-    project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all())
-    student = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
+    project = serializers.PrimaryKeyRelatedField(
+        queryset=Project.objects.all())
+    student = serializers.PrimaryKeyRelatedField(
+        queryset=get_user_model().objects.all())
+
     class Meta:
         model = StudentSubmission
         fields = ('id', 'project', 'student', 'url', 'feedback', 'approved')
         read_only_fields = ['feedback', 'approved']
 
+
+@permission_classes([IsAuthenticated])
 class UserViewSet(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
 
+
+@permission_classes([IsAuthenticated])
 class AssignmentViewSet(viewsets.ModelViewSet):
     queryset = StudentSubmission.objects.all().prefetch_related('users')
     serializer_class = AssignmentSerializer
+
+
+class CustomAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(
+            data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token' : token.key,
+            'user_id' : user.pk,
+            'email' : user.email
+        })
+
