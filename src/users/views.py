@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from submissions.models import StudentSubmission
 from projects.models import Project
 from .permissions import ObjectPermission
+from .models import UserProfile
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -25,6 +26,13 @@ class UserSerializer(serializers.ModelSerializer):
         user.is_student = is_student
         user.save()
         return user
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
+
+    class Meta:
+        model = UserProfile
+        fields = ('first_name', 'user')
 
 
 class AssignmentSerializer(serializers.ModelSerializer):
@@ -43,6 +51,11 @@ class AssignmentSerializer(serializers.ModelSerializer):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
+
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
 
 
 @permission_classes([IsAuthenticated])
