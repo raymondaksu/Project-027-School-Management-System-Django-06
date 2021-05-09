@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'social_django',
+    'oauth2_provider',
+    'rest_framework_social_oauth2',
     # ------apps----------
     'users.apps.UsersConfig',
     'certificates.apps.CertificatesConfig',
@@ -142,7 +144,7 @@ AUTHENTICATION_BACKENDS = (
 
 SOCIAL_AUTH_GITHUB_KEY = config('GITHUB_CLIENT_ID')
 SOCIAL_AUTH_GITHUB_SECRET = config('GITHUB_CLIENT_SECRET')
-SOCIAL_AUTH_POSTGRES_JSONFIELD = True
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
 DRFSO2_PROPRIETARY_BACKEND_NAME = 'Github'
 
 
@@ -173,3 +175,5 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+APPEND_SLASH=False
