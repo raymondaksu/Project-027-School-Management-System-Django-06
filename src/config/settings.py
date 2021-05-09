@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'social_django',
     'oauth2_provider',
     'rest_framework_social_oauth2',
+    'debug_toolbar',
     # ------apps----------
     'users.apps.UsersConfig',
     'certificates.apps.CertificatesConfig',
@@ -56,6 +57,7 @@ INSTALLED_APPS = [
     'projects.apps.ProjectsConfig',
     'submissions.apps.SubmissionsConfig',
     'oauth.apps.OauthConfig'
+    'volunteers.apps.VolunteersConfig'
 ]
 
 MIDDLEWARE = [
@@ -67,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -177,3 +180,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ORIGIN_ALLOW_ALL = True
 
 APPEND_SLASH=False
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]

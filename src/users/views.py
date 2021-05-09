@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
+from django.core.exceptions import PermissionDenied
 from rest_framework import serializers, viewsets
 from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes
@@ -53,6 +53,9 @@ class AssignmentSerializer(serializers.ModelSerializer):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
+
+    def list(self, request, *args, **kwargs):
+        raise PermissionDenied()
 
 
 @permission_classes([IsAuthenticated])
