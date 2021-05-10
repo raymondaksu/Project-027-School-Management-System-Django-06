@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     'lectures.apps.LecturesConfig',
     'projects.apps.ProjectsConfig',
     'submissions.apps.SubmissionsConfig',
-    'oauth.apps.OauthConfig'
+    'oauth.apps.OauthConfig',
     'volunteers.apps.VolunteersConfig'
 ]
 
@@ -179,7 +179,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-APPEND_SLASH=False
+APPEND_SLASH=True
 
 INTERNAL_IPS = [
     '127.0.0.1',

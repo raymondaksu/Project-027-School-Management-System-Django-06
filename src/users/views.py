@@ -1,12 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
-from rest_framework import serializers, viewsets
+from rest_framework import serializers, status, viewsets
 from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+import json
 
 from submissions.models import StudentSubmission
 from projects.models import Project
@@ -42,6 +43,10 @@ class AssignmentSerializer(serializers.ModelSerializer):
         queryset=Project.objects.all())
     student = serializers.PrimaryKeyRelatedField(
         queryset=get_user_model().objects.all())
+    url = serializers.CharField(max_length=255)
+
+    def create(self, validated_data):
+        return StudentSubmission.objects.create(**validated_data)
 
     class Meta:
         model = StudentSubmission
@@ -68,6 +73,17 @@ class UserProfileView(APIView):
 
 @permission_classes([IsAuthenticated])
 class SubmissionsViewSet(viewsets.ModelViewSet):
+    def create(self, request, *args, **kwargs):
+        serializer = AssignmentSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save(
+                created_by = request.user,
+                modified_by = request.user
+            )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
     def list(self, request, *args, **kwargs):
         queryset = StudentSubmission.objects.filter(student=request.user.id)
         serializer = AssignmentSerializer(queryset, many=True)
