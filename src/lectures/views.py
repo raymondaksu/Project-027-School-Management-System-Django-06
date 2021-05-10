@@ -10,7 +10,7 @@ class LectureSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'description', 'lecturer_name',
                   'date', 'duration', 'slides_url', 'level', 'required')
 
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 class LectureViewSet(viewsets.ModelViewSet):
     queryset = Lecture.objects.all()
     serializer_class = LectureSerializer

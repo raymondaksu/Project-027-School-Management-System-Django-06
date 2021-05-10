@@ -30,8 +30,19 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+
 class UserProfileSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=get_user_model().objects.all())
+
+    class Meta:
+        model = UserProfile
+        fields = ('__all__')
+
+
+class CreateUserSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(
+        queryset=get_user_model().objects.all())
 
     class Meta:
         model = UserProfile
@@ -54,7 +65,7 @@ class AssignmentSerializer(serializers.ModelSerializer):
         read_only_fields = ['feedback', 'approved']
 
 
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 class UserViewSet(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
@@ -63,12 +74,21 @@ class UserViewSet(viewsets.ModelViewSet):
         raise PermissionDenied()
 
 
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 class UserProfileView(APIView):
     def get(self, request, pk):
-        profile = UserProfile.objects.get(user=request.user)
+        profile = UserProfile.objects.get(user=pk)
         serializer = UserProfileSerializer(profile)
         return Response(serializer.data)
+
+    def post(self, request, pk):
+        # name, bio, github_username, avatar, current_level
+        profile = UserProfile(
+            **request.data
+        )
+        profile.user = get_user_model().objects.get(pk=pk)
+        profile.save()
+        return Response('Success')
 
 
 @permission_classes([IsAuthenticated])
@@ -78,8 +98,8 @@ class SubmissionsViewSet(viewsets.ModelViewSet):
 
         if serializer.is_valid():
             serializer.save(
-                created_by = request.user,
-                modified_by = request.user
+                created_by=request.user,
+                modified_by=request.user
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
@@ -98,8 +118,7 @@ class CustomAuthToken(ObtainAuthToken):
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
         return Response({
-            'token' : token.key,
-            'user_id' : user.pk,
-            'email' : user.email
+            'token': token.key,
+            'user_id': user.pk,
+            'email': user.email
         })
-
